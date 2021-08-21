@@ -1,1 +1,3 @@
-console.log('aaaa');
+"use strict";
+let age;
+age = 30;

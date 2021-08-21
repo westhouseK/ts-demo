@@ -1,1 +1,2 @@
-console.log('aaaa')
+let age:number;
+age = 30
