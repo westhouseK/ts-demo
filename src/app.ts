@@ -1,14 +1,20 @@
-class Department {
+abstract class Department {
+
+  static fiscalYear = '2020'
   
   // letもconstもつけない
   protected employees: string[] = []
 
-  // プロパティをかかなくて済む
-  constructor(private readonly id: string, public name: string) {}
-
-  discribe(this: Department) {
-    console.log(`Department: ${this.id} ${this.name}`)
+  static createEployee(name: string) {
+    return { name }
   }
+
+  // プロパティをかかなくて済む
+  constructor(protected readonly id: string, public name: string) {
+    
+  }
+
+  abstract discribe(this: Department): void;
 
   addEmployee(employee: string) {
     this.employees.push(employee)
@@ -28,11 +34,16 @@ class ITDepartment extends Department {
     super(id, 'IT')
     this.admins = admins
   }
+
+  discribe() {
+    console.log('IT部門' + this.id)
+  }
  }
 
-class AccountingDepartmetn extends Department {
+class AccountingDepartment extends Department {
 
   private lastReport: string;
+  private static instance: AccountingDepartment;
 
   get mostRecentReport() {
     if (this.lastReport) {
@@ -48,9 +59,21 @@ class AccountingDepartmetn extends Department {
     this.addReport(value)
   }
   
-  constructor(id: string, private reports: string[] = []) {
+  private constructor(id: string, private reports: string[] = []) {
     super(id, 'Accouting')
     this.lastReport = reports[0]
+  }
+
+  static getInstance() {
+    if (this.instance) {
+      return this.instance
+    }
+    this.instance = new AccountingDepartment('D2')
+    return this.instance
+  }
+
+  discribe() {
+    console.log(`会計: ${this.id} ${this.name}`)
   }
 
   addReport(report: string) {
@@ -70,6 +93,9 @@ class AccountingDepartmetn extends Department {
   }
 }
 
+const e = Department.createEployee('John')
+console.log(e, Department.fiscalYear)
+
 const it = new ITDepartment('D1', ['Max'])
 console.log(it)
 it.addEmployee('Max')
@@ -77,7 +103,8 @@ it.addEmployee('Manu')
 it.discribe()
 it.printEmployeeInformation()
 
-const accouting = new AccountingDepartmetn('D2')
+const accouting = AccountingDepartment.getInstance()
+const accouting2 = AccountingDepartment.getInstance()
 // getterは()がいらない
 // console.log(accouting.mostRecentReport)
 
@@ -86,10 +113,11 @@ accouting.mostRecentReport = 'test'
 accouting.addReport('something')
 console.log(accouting.mostRecentReport)
 
-accouting.printReports()
+// accouting.printReports()
 accouting.addEmployee('Max')
 accouting.addEmployee('Manu')
-accouting.printEmployeeInformation()
+// accouting.printEmployeeInformation()
+accouting.discribe()
 
 
 

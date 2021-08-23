@@ -5,8 +5,8 @@ class Department {
         this.name = name;
         this.employees = [];
     }
-    discribe() {
-        console.log(`Department: ${this.id} ${this.name}`);
+    static createEployee(name) {
+        return { name };
     }
     addEmployee(employee) {
         this.employees.push(employee);
@@ -16,13 +16,17 @@ class Department {
         console.log(this.employees);
     }
 }
+Department.fiscalYear = '2020';
 class ITDepartment extends Department {
     constructor(id, admins) {
         super(id, 'IT');
         this.admins = admins;
     }
+    discribe() {
+        console.log('IT部門' + this.id);
+    }
 }
-class AccountingDepartmetn extends Department {
+class AccountingDepartment extends Department {
     constructor(id, reports = []) {
         super(id, 'Accouting');
         this.reports = reports;
@@ -40,6 +44,16 @@ class AccountingDepartmetn extends Department {
         }
         this.addReport(value);
     }
+    static getInstance() {
+        if (this.instance) {
+            return this.instance;
+        }
+        this.instance = new AccountingDepartment('D2');
+        return this.instance;
+    }
+    discribe() {
+        console.log(`会計: ${this.id} ${this.name}`);
+    }
     addReport(report) {
         this.reports.push(report);
         this.lastReport = report;
@@ -54,18 +68,20 @@ class AccountingDepartmetn extends Department {
         this.employees.push(name);
     }
 }
+const e = Department.createEployee('John');
+console.log(e, Department.fiscalYear);
 const it = new ITDepartment('D1', ['Max']);
 console.log(it);
 it.addEmployee('Max');
 it.addEmployee('Manu');
 it.discribe();
 it.printEmployeeInformation();
-const accouting = new AccountingDepartmetn('D2');
+const accouting = AccountingDepartment.getInstance();
+const accouting2 = AccountingDepartment.getInstance();
 accouting.mostRecentReport = 'test';
 accouting.addReport('something');
 console.log(accouting.mostRecentReport);
-accouting.printReports();
 accouting.addEmployee('Max');
 accouting.addEmployee('Manu');
-accouting.printEmployeeInformation();
+accouting.discribe();
 //# sourceMappingURL=app.js.map
