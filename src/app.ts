@@ -97,3 +97,22 @@ function moveAnimal(animal: Animal) {
   console.log(speed)
 }
 moveAnimal({type: 'horse', runningSpeed: 100})
+
+// const input = <HTMLInputElement>document.getElementById('user')!
+// const input = document.getElementById('user')! as HTMLInputElement
+const input = document.getElementById('user')
+if (input) {
+  (input as HTMLInputElement).value = 'こんにちは'
+}
+
+interface ErrorContainer {
+  id: string,
+  [prop: string]: string // インデックス型
+}
+
+const errorBag: ErrorContainer = {
+  id: '1',
+  email: 'xxx',
+  1: ''
+}
+

@@ -53,4 +53,13 @@ function moveAnimal(animal) {
     console.log(speed);
 }
 moveAnimal({ type: 'horse', runningSpeed: 100 });
+const input = document.getElementById('user');
+if (input) {
+    input.value = 'こんにちは';
+}
+const errorBag = {
+    id: '1',
+    email: 'xxx',
+    1: ''
+};
 //# sourceMappingURL=app.js.map
