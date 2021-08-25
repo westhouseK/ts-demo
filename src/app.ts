@@ -38,7 +38,16 @@ function add(a: Combinable, b: Combinable) {
 const result = add('a', 'b')
 result.split('')
 
-
+const fetchItem = {
+  id: 'u1',
+  name: 'user1',
+  job: {
+    title: 'a',
+    des: 'b'
+  }
+}
+// オプショナルチェイン
+console.log(fetchItem?.job?.title)
 
 
 type UnknownEployee = Employee | Admin
