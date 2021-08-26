@@ -22,6 +22,9 @@ const fetchItem = {
     }
 };
 console.log((_a = fetchItem === null || fetchItem === void 0 ? void 0 : fetchItem.job) === null || _a === void 0 ? void 0 : _a.title);
+const userInput = null;
+const storedData = userInput !== null && userInput !== void 0 ? userInput : 'xxx';
+console.log(storedData);
 function printEmployeeInfo(emp) {
     console.log(emp.name);
     if ('privileges' in emp) {

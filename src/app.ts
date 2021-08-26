@@ -49,6 +49,10 @@ const fetchItem = {
 // オプショナルチェイン
 console.log(fetchItem?.job?.title)
 
+const userInput = null
+// null合体演算子
+const storedData = userInput ?? 'xxx'
+console.log(storedData)
 
 type UnknownEployee = Employee | Admin
 
