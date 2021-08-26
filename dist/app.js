@@ -1,80 +1,57 @@
 "use strict";
-var _a;
-const e1 = {
-    name: 'Max',
-    privileges: ['create-server'],
-    startDate: new Date()
-};
-function add(a, b) {
-    if (typeof a === 'string' || typeof b === 'string') {
-        return a.toString() + b.toString();
-    }
-    return a + b;
+const names = ['max', 'manuel'];
+console.log(names[0].split('a'));
+const pro = new Promise((resolve, reject) => {
+    setTimeout(() => {
+        resolve('fin!');
+    }, 1000);
+});
+pro.then(data => {
+    console.log(data.toString());
+});
+function merge(o1, o2) {
+    return Object.assign(o1, o2);
 }
-const result = add('a', 'b');
-result.split('');
-const fetchItem = {
-    id: 'u1',
-    name: 'user1',
-    job: {
-        title: 'a',
-        des: 'b'
+const a = merge({ name: 'max' }, { age: 20 });
+console.log(a.name);
+function countAndDescribe(e) {
+    let text = 'aaa';
+    if (e.length > 0) {
+        text = 'bbb';
     }
-};
-console.log((_a = fetchItem === null || fetchItem === void 0 ? void 0 : fetchItem.job) === null || _a === void 0 ? void 0 : _a.title);
-const userInput = null;
-const storedData = userInput !== null && userInput !== void 0 ? userInput : 'xxx';
-console.log(storedData);
-function printEmployeeInfo(emp) {
-    console.log(emp.name);
-    if ('privileges' in emp) {
-        console.log(emp.privileges);
-    }
+    return [e, text];
 }
-printEmployeeInfo({ name: 'a', startDate: new Date() });
-class Car {
-    drive() {
-        console.log('運転中');
-    }
+console.log(countAndDescribe(['ccc', 'ccc']));
+function extractAndConvert(obj, key) {
+    return obj[key];
 }
-class Truck {
-    drive() {
-        console.log('トラック運転中');
+extractAndConvert({ name: 'max' }, 'name');
+class D {
+    constructor() {
+        this.data = [];
     }
-    loadCargo(acount) {
-        console.log(acount);
+    addItem(item) {
+        this.data.push(item);
+    }
+    removeItem(item) {
+        this.data.splice(this.data.indexOf(item), 1);
+    }
+    getItem() {
+        return [...this.data];
     }
 }
-const v1 = new Car();
-const v2 = new Truck();
-function useVehicle(vehicle) {
-    vehicle.drive();
-    if ('loadCargo' in vehicle) {
-        vehicle.loadCargo(1);
-    }
+const ts = new D();
+ts.addItem('a');
+ts.addItem('b');
+ts.removeItem('b');
+console.log(ts.getItem());
+const ds = new D();
+function createCGoul(title, des, date) {
+    let c = {};
+    c.title = title;
+    c.des = des;
+    c.date = date;
+    return c;
 }
-useVehicle(v1);
-useVehicle(v2);
-function moveAnimal(animal) {
-    let speed;
-    switch (animal.type) {
-        case 'bird':
-            speed = animal.flyingSpeed;
-            break;
-        case 'horse':
-            speed = animal.runningSpeed;
-            break;
-    }
-    console.log(speed);
-}
-moveAnimal({ type: 'horse', runningSpeed: 100 });
-const input = document.getElementById('user');
-if (input) {
-    input.value = 'こんにちは';
-}
-const errorBag = {
-    id: '1',
-    email: 'xxx',
-    1: ''
-};
+const ns = ['a', 'b'];
 //# sourceMappingURL=app.js.map

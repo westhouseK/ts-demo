@@ -1,142 +1,91 @@
-// 交差型
-type Admin = {
-  name: string,
-  privileges: string[],
+const names: Array<string> = ['max', 'manuel'] // string[]
+console.log(names[0].split('a'))
+
+const pro: Promise<string> = new Promise<string>((resolve, reject) => {
+  setTimeout(() => {
+    resolve('fin!')
+  }, 1000)
+})
+
+pro.then(data => {
+  console.log(data.toString())
+})
+
+// generics 交差型
+function merge<T extends object, U extends object>(o1: T, o2: U) {
+  return Object.assign(o1, o2)
 }
 
-type Employee = {
-  name: string,
-  startDate: Date
+// const a = merge<{name: string}, {age: number}>({ name: 'max' }, { age: 20 })
+// const a = merge({ name: 'max' }, 20 )
+const a = merge({ name: 'max' }, { age: 20 })
+console.log(a.name)
+
+interface Lengthy {
+  length: number
 }
 
-// interface EleccatedEmploee extends Admin, Employee {}
-type EleccatedEmploee = Admin & Employee
-
-const e1: EleccatedEmploee = {
-  name: 'Max',
-  privileges: ['create-server'],
-  startDate: new Date()
-}
-
-type Combinable = string | number
-type Numeric = number | boolean
-
-type Universal = Combinable & Numeric
-
-// 関数オーバーロード
-function add(a: number, b: number): number;
-function add(a: string, b: string): string;
-function add(a: string, b: number): string;
-function add(a: number, b: string): string;
-function add(a: Combinable, b: Combinable) {
-  if (typeof a === 'string' || typeof b === 'string') {
-    return a.toString() + b.toString()
-  } 
-  return a + b;
-}
- 
-const result = add('a', 'b')
-result.split('')
-
-const fetchItem = {
-  id: 'u1',
-  name: 'user1',
-  job: {
-    title: 'a',
-    des: 'b'
+function countAndDescribe<T extends Lengthy>(e: T): [T, string] {
+  let text = 'aaa'
+  if (e.length > 0) {
+    text = 'bbb'
   }
+  return [e, text];
 }
-// オプショナルチェイン
-console.log(fetchItem?.job?.title)
 
-const userInput = null
-// null合体演算子
-const storedData = userInput ?? 'xxx'
-console.log(storedData)
+console.log(countAndDescribe(['ccc', 'ccc']))
 
-type UnknownEployee = Employee | Admin
+function extractAndConvert<T extends object, U extends keyof T>(obj: T, key: U) {
+  return obj[key]
+}
 
-function printEmployeeInfo(emp: UnknownEployee) {
-  console.log(emp.name)
-  if ('privileges' in emp) {
-    console.log(emp.privileges)
+extractAndConvert({name: 'max'}, 'name')
+
+class D<T extends string | number | boolean> {
+  private data: T[] = []
+
+  addItem(item: T) {
+    this.data.push(item)
+  }
+
+  removeItem(item: T) {
+    this.data.splice(this.data.indexOf(item), 1) // -1
+  }
+
+  getItem() {
+    return [...this.data]
   }
 }
 
-printEmployeeInfo({name: 'a', startDate: new Date()})
+const ts = new D<string>()
+ts.addItem('a');
+ts.addItem('b');
+ts.removeItem('b');
+console.log(ts.getItem())
 
-class Car {
-  drive() {
-    console.log('運転中')
-  }
+const ds = new D<number>()
+
+// const os = new D<object>()
+// プリミティブ型のみ
+// os.addItem({name: 'a'})
+// os.addItem({name: 'b'})
+// os.removeItem({name: 'a'})
+// console.log(os.getItem())
+
+interface C {
+  title: string,
+  des: string,
+  date: Date
 }
 
-class Truck {
-  drive() {
-    console.log('トラック運転中')
-  }
-
-  loadCargo(acount: number) {
-    console.log(acount)
-  }
+// 難しい
+function createCGoul(title: string, des: string, date: Date): C {
+  let c: Partial<C> = {}
+  c.title = title
+  c.des = des
+  c.date = date
+  return c as C
 }
 
-type Vehicle = Car | Truck
-
-const v1 = new Car()
-const v2 = new Truck()
-
-function useVehicle(vehicle: Vehicle) {
-  vehicle.drive()
-  if ('loadCargo' in vehicle) {
-    vehicle.loadCargo(1);
-  } 
-}
-
-useVehicle(v1)
-useVehicle(v2)
-
-interface Bird {
-  type: 'bird',
-  flyingSpeed: number
-}
-
-interface Horse {
-  type: 'horse',
-  runningSpeed: number
-}
-
-type Animal = Bird | Horse
-
-function moveAnimal(animal: Animal) {
-  let speed;
-  switch(animal.type) {
-    case 'bird':
-      speed = animal.flyingSpeed
-      break
-    case 'horse':
-      speed = animal.runningSpeed
-      break
-  }
-  console.log(speed)
-}
-moveAnimal({type: 'horse', runningSpeed: 100})
-
-// const input = <HTMLInputElement>document.getElementById('user')!
-// const input = document.getElementById('user')! as HTMLInputElement
-const input = document.getElementById('user')
-if (input) {
-  (input as HTMLInputElement).value = 'こんにちは'
-}
-
-interface ErrorContainer {
-  id: string,
-  [prop: string]: string // インデックス型
-}
-
-const errorBag: ErrorContainer = {
-  id: '1',
-  email: 'xxx',
-  1: ''
-}
+const ns: Readonly<string[]> = ['a', 'b']
 
