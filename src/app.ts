@@ -1,91 +1,201 @@
-const names: Array<string> = ['max', 'manuel'] // string[]
-console.log(names[0].split('a'))
+function Logger(log: string) {
+  console.log('Logger factory')
+  return function(constructor: Function) {
+    console.log('Logger')
+    console.log(constructor)
+  }
+}
 
-const pro: Promise<string> = new Promise<string>((resolve, reject) => {
-  setTimeout(() => {
-    resolve('fin!')
-  }, 1000)
+function func(tmp: string, hookid: string) {
+  console.log('func factory')
+  return function<T extends {new(...args: any[]): {name: string}}>(originconstructor: T) {
+    return class extends originconstructor {
+      constructor(..._: any[]) {
+        super()
+        console.log('func')
+        const hookEl = document.getElementById(hookid)
+        if (hookEl) {
+          hookEl.innerHTML = tmp
+          hookEl.querySelector('h1')!.textContent = this.name
+        }
+      }
+    }
+  }
+}
+
+// デコレーターはクラスが定義された時に実行される
+@Logger('log') // ②
+@func("<h1>h1タグ</h1>", "app") // ①
+class Person {
+  name = 'Max'
+
+  constructor() {
+    console.log('aaa')
+  }
+}
+
+const p = new Person()
+console.log(p)
+
+// .....
+// プロパティデコレーター
+function Log(target: any, propetyName: string | Symbol) {
+  console.log('Log1')
+  console.log(target, propetyName)
+}
+
+// アクセサデコレーター
+function Log2(target: any, name: string, des: PropertyDescriptor): PropertyDescriptor {
+  console.log('Log2')
+  console.log(target)
+  console.log(name)
+  console.log(des)
+  return {}
+}
+
+// メソッドデコレーター
+function Log3(target: any, name: string | Symbol, des: PropertyDescriptor) {
+  console.log('Log3')
+  console.log(target)
+  console.log(name)
+  console.log(des)
+}
+
+// パラメータデコレーター
+function Log4(target: any, name: string | Symbol, position: number) {
+  console.log('Log4')
+  console.log(target)
+  console.log(name)
+  console.log(position)
+}
+
+class Product {
+  @Log
+  title: string
+  private _price: number
+
+  @Log2
+  set price(v: number) {
+    if (v > 0) {
+      this._price = v
+    } else {
+      throw new Error('incorrect')
+    }
+  }
+
+  constructor(t: string, p: number) {
+    this.title = t
+    this._price = p
+  }
+
+  @Log3
+  getPriceWithTax(@Log4 tax: number) {
+    return this._price * (1 + tax)
+  } 
+}
+
+function Autobind(_: any, _2: string, des: PropertyDescriptor) {
+  const oriM = des.value
+  const adjDescriptor: PropertyDescriptor = {
+    configurable: true,
+    enumerable: false,
+    get() {
+      // デコレーターをつけたオブジェクト
+      const boundFn = oriM.bind(this) // ここが大事！
+      return boundFn
+    }
+  }
+  return adjDescriptor
+}
+
+
+class Printer {
+  message = 'クリックしました'
+
+  @Autobind
+  showMsg() {
+    console.log(this.message)
+  }
+
+}
+
+const pri = new Printer
+
+const button = document.querySelector('button')!
+button.addEventListener('click', pri.showMsg)
+
+// .......
+
+interface ValidatorConfig {
+  [prop: string]: {
+    [ValidatableProp: string]: string[] //['required'. 'positive']
+  }
+}
+
+const resisteredValidators: ValidatorConfig = {}
+
+function Required(target: any, propName: string) {
+  resisteredValidators[target.constructor.name] = {
+    ...resisteredValidators[target.constructor.name],
+    [propName]: ['required']
+  }
+}
+
+function PostiveNumber(target: any, propName: string) {
+  resisteredValidators[target.constructor.name] = {
+    ...resisteredValidators[target.constructor.name],
+    [propName]: ['positive']
+  }
+}
+
+function validate(obj: any) {
+  const objValidatorConfig = resisteredValidators[obj.constructor.name]
+  if (!obj) {
+    true
+  }
+
+  let isValid = true
+  for (const prop in objValidatorConfig) {
+    for (const validator of objValidatorConfig[prop]) {
+      switch (validator) {
+        case 'required': 
+          isValid = isValid && !!obj[prop]
+          break
+        case 'positive': 
+          isValid = isValid && obj[prop] > 0
+          break
+      }
+    }
+  }
+
+  return isValid; 
+}
+
+class Course {
+  @Required
+  title: string
+  @PostiveNumber
+  price: number
+
+  constructor(t: string, p: number) {
+    this.title = t
+    this.price = p
+  }
+}
+
+const c = document.querySelector('form')!
+c.addEventListener('submit', event => {
+  event.preventDefault()
+  const titleEL = document.getElementById('title') as HTMLInputElement
+  const priceEL = document.getElementById('price') as HTMLInputElement
+
+  const title = titleEL.value
+  const price = +priceEL.value
+
+  const createdCourse = new Course(title, price)
+
+  if (!validate(createdCourse)) {
+    throw new Error('エラー')
+  }
+  console.log(createdCourse)
 })
-
-pro.then(data => {
-  console.log(data.toString())
-})
-
-// generics 交差型
-function merge<T extends object, U extends object>(o1: T, o2: U) {
-  return Object.assign(o1, o2)
-}
-
-// const a = merge<{name: string}, {age: number}>({ name: 'max' }, { age: 20 })
-// const a = merge({ name: 'max' }, 20 )
-const a = merge({ name: 'max' }, { age: 20 })
-console.log(a.name)
-
-interface Lengthy {
-  length: number
-}
-
-function countAndDescribe<T extends Lengthy>(e: T): [T, string] {
-  let text = 'aaa'
-  if (e.length > 0) {
-    text = 'bbb'
-  }
-  return [e, text];
-}
-
-console.log(countAndDescribe(['ccc', 'ccc']))
-
-function extractAndConvert<T extends object, U extends keyof T>(obj: T, key: U) {
-  return obj[key]
-}
-
-extractAndConvert({name: 'max'}, 'name')
-
-class D<T extends string | number | boolean> {
-  private data: T[] = []
-
-  addItem(item: T) {
-    this.data.push(item)
-  }
-
-  removeItem(item: T) {
-    this.data.splice(this.data.indexOf(item), 1) // -1
-  }
-
-  getItem() {
-    return [...this.data]
-  }
-}
-
-const ts = new D<string>()
-ts.addItem('a');
-ts.addItem('b');
-ts.removeItem('b');
-console.log(ts.getItem())
-
-const ds = new D<number>()
-
-// const os = new D<object>()
-// プリミティブ型のみ
-// os.addItem({name: 'a'})
-// os.addItem({name: 'b'})
-// os.removeItem({name: 'a'})
-// console.log(os.getItem())
-
-interface C {
-  title: string,
-  des: string,
-  date: Date
-}
-
-// 難しい
-function createCGoul(title: string, des: string, date: Date): C {
-  let c: Partial<C> = {}
-  c.title = title
-  c.des = des
-  c.date = date
-  return c as C
-}
-
-const ns: Readonly<string[]> = ['a', 'b']
-
