@@ -1,201 +1,78 @@
-function Logger(log: string) {
-  console.log('Logger factory')
-  return function(constructor: Function) {
-    console.log('Logger')
-    console.log(constructor)
-  }
-}
-
-function func(tmp: string, hookid: string) {
-  console.log('func factory')
-  return function<T extends {new(...args: any[]): {name: string}}>(originconstructor: T) {
-    return class extends originconstructor {
-      constructor(..._: any[]) {
-        super()
-        console.log('func')
-        const hookEl = document.getElementById(hookid)
-        if (hookEl) {
-          hookEl.innerHTML = tmp
-          hookEl.querySelector('h1')!.textContent = this.name
-        }
-      }
-    }
-  }
-}
-
-// デコレーターはクラスが定義された時に実行される
-@Logger('log') // ②
-@func("<h1>h1タグ</h1>", "app") // ①
-class Person {
-  name = 'Max'
-
-  constructor() {
-    console.log('aaa')
-  }
-}
-
-const p = new Person()
-console.log(p)
-
-// .....
-// プロパティデコレーター
-function Log(target: any, propetyName: string | Symbol) {
-  console.log('Log1')
-  console.log(target, propetyName)
-}
-
-// アクセサデコレーター
-function Log2(target: any, name: string, des: PropertyDescriptor): PropertyDescriptor {
-  console.log('Log2')
-  console.log(target)
-  console.log(name)
-  console.log(des)
-  return {}
-}
-
-// メソッドデコレーター
-function Log3(target: any, name: string | Symbol, des: PropertyDescriptor) {
-  console.log('Log3')
-  console.log(target)
-  console.log(name)
-  console.log(des)
-}
-
-// パラメータデコレーター
-function Log4(target: any, name: string | Symbol, position: number) {
-  console.log('Log4')
-  console.log(target)
-  console.log(name)
-  console.log(position)
-}
-
-class Product {
-  @Log
-  title: string
-  private _price: number
-
-  @Log2
-  set price(v: number) {
-    if (v > 0) {
-      this._price = v
-    } else {
-      throw new Error('incorrect')
-    }
-  }
-
-  constructor(t: string, p: number) {
-    this.title = t
-    this._price = p
-  }
-
-  @Log3
-  getPriceWithTax(@Log4 tax: number) {
-    return this._price * (1 + tax)
-  } 
-}
-
-function Autobind(_: any, _2: string, des: PropertyDescriptor) {
-  const oriM = des.value
+// Decorator
+function bind(_: any, _2: string, description: PropertyDescriptor) {
+  const origin = description.value
   const adjDescriptor: PropertyDescriptor = {
     configurable: true,
     enumerable: false,
     get() {
-      // デコレーターをつけたオブジェクト
-      const boundFn = oriM.bind(this) // ここが大事！
-      return boundFn
+      return origin.bind(this)
     }
   }
   return adjDescriptor
 }
 
+// class
+class ProjectInput {
+  templateElment: HTMLTemplateElement
+  hostElement: HTMLDivElement
+  element: HTMLFormElement
+  titleInputElement: HTMLInputElement
+  descriptionInputElement: HTMLInputElement
+  mandayInputElement: HTMLInputElement
 
-class Printer {
-  message = 'クリックしました'
+  constructor() {
+    this.templateElment = document.getElementById('project-input')! as HTMLTemplateElement
+    this.hostElement = document.getElementById('app')! as HTMLDivElement
 
-  @Autobind
-  showMsg() {
-    console.log(this.message)
+    const importedNode = document.importNode(this.templateElment.content, true)
+    this.element = importedNode.firstElementChild as HTMLFormElement
+    this.element.id = 'user-input'
+
+    this.titleInputElement = this.element.querySelector('#title') as HTMLInputElement
+    this.descriptionInputElement = this.element.querySelector('#description') as HTMLInputElement
+    this.mandayInputElement = this.element.querySelector('#manday') as HTMLInputElement
+
+    this.configure()
+    this.attach()
   }
 
-}
+  private gatherUserInput(): [string, string, number] | void {
+    const enteredTitle = this.titleInputElement.value
+    const enteredDescription = this.descriptionInputElement.value
+    const enteredManday = this.mandayInputElement.value
 
-const pri = new Printer
-
-const button = document.querySelector('button')!
-button.addEventListener('click', pri.showMsg)
-
-// .......
-
-interface ValidatorConfig {
-  [prop: string]: {
-    [ValidatableProp: string]: string[] //['required'. 'positive']
-  }
-}
-
-const resisteredValidators: ValidatorConfig = {}
-
-function Required(target: any, propName: string) {
-  resisteredValidators[target.constructor.name] = {
-    ...resisteredValidators[target.constructor.name],
-    [propName]: ['required']
-  }
-}
-
-function PostiveNumber(target: any, propName: string) {
-  resisteredValidators[target.constructor.name] = {
-    ...resisteredValidators[target.constructor.name],
-    [propName]: ['positive']
-  }
-}
-
-function validate(obj: any) {
-  const objValidatorConfig = resisteredValidators[obj.constructor.name]
-  if (!obj) {
-    true
-  }
-
-  let isValid = true
-  for (const prop in objValidatorConfig) {
-    for (const validator of objValidatorConfig[prop]) {
-      switch (validator) {
-        case 'required': 
-          isValid = isValid && !!obj[prop]
-          break
-        case 'positive': 
-          isValid = isValid && obj[prop] > 0
-          break
-      }
+    if (enteredTitle.trim().length === 0 || enteredDescription.trim().length === 0 || enteredManday.trim().length === 0) {
+      alert('入力値不正')
+      return
+    } else {
+      return [enteredTitle, enteredDescription, +enteredManday]
     }
   }
 
-  return isValid; 
-}
+  private clearInputs() {
+    this.titleInputElement.value = ''
+    this.descriptionInputElement.value = ''
+    this.mandayInputElement.value = ''
+  }
 
-class Course {
-  @Required
-  title: string
-  @PostiveNumber
-  price: number
+  @bind
+  private submitHandler(event: Event) {
+    event.preventDefault()
+    const userInput = this.gatherUserInput()
+    if (Array.isArray(userInput)) {
+      const [title, desc, manday] = userInput
+      console.log(title, desc, manday)
+      this.clearInputs()
+    }
+  }
 
-  constructor(t: string, p: number) {
-    this.title = t
-    this.price = p
+  private configure() {
+    this.element.addEventListener('submit', this.submitHandler)
+  }
+
+  private attach() {
+    this.hostElement.insertAdjacentElement('afterbegin', this.element)
   }
 }
 
-const c = document.querySelector('form')!
-c.addEventListener('submit', event => {
-  event.preventDefault()
-  const titleEL = document.getElementById('title') as HTMLInputElement
-  const priceEL = document.getElementById('price') as HTMLInputElement
-
-  const title = titleEL.value
-  const price = +priceEL.value
-
-  const createdCourse = new Course(title, price)
-
-  if (!validate(createdCourse)) {
-    throw new Error('エラー')
-  }
-  console.log(createdCourse)
-})
+const prjInput = new ProjectInput
