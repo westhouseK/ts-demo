@@ -25,6 +25,9 @@
     "webpack-dev-server": "^3.10.3"
   },
   "dependencies": {
-    "lodash": "^4.17.21"
+    "class-transformer": "^0.4.0",
+    "class-validator": "^0.13.1",
+    "lodash": "^4.17.21",
+    "reflect-metadata": "^0.1.13"
   }
 }

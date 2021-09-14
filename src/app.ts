@@ -1,6 +1,26 @@
-import _ from "lodash";
+import "reflect-metadata";
+import { plainToClass } from "class-transformer";
+import { validate } from "class-validator";
 
-console.log(_.shuffle([1, 2, 3]));
+import { Product } from "./product.model";
 
-declare var GLOBAL: any;
-console.log(GLOBAL);
+const products = [
+  { title: "bbb", price: 200 },
+  { title: "ccc", price: 300 },
+];
+
+const l = plainToClass(Product, products);
+
+const a = new Product("", -1000);
+validate(a).then((errors) => {
+  if (errors.length > 0) {
+    console.log("error");
+    console.log(errors);
+  } else {
+    console.log(a.getInfomation());
+  }
+});
+
+for (const prod of l) {
+  console.log(prod.getInfomation());
+}
