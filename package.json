@@ -1,20 +1,26 @@
 {
-  "name": "ts-demo",
+  "name": "understanding-typescript",
   "version": "1.0.0",
-  "description": "",
+  "description": "Understanding TypeScript Course Setup",
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "lite-server"
+    "start": "webpack-dev-server",
+    "build": "webpack --config webpack.config.prod.js"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/westhouseK/ts-demo.git"
-  },
-  "author": "",
+  "keywords": [
+    "typescript",
+    "course"
+  ],
+  "author": "Maximilian Schwarzmüller",
   "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/westhouseK/ts-demo/issues"
-  },
-  "homepage": "https://github.com/westhouseK/ts-demo#readme"
+  "devDependencies": {
+    "clean-webpack-plugin": "^4.0.0",
+    "lite-server": "^2.5.4",
+    "ts-loader": "^7.0.2",
+    "typescript": "^3.8.3",
+    "webpack": "^4.43.0",
+    "webpack-cli": "^3.3.11",
+    "webpack-dev-server": "^3.10.3"
+  }
 }

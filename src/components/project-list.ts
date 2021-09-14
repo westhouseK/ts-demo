@@ -1,9 +1,9 @@
-import { DropTarget } from "../models/drag-drop.js";
-import { Project, ProjectStatus } from "../models/project.js";
-import Component from "../components/components.js";
-import { bind } from "../decorators/decorator.js";
-import { projectState } from "../state/project-state.js";
-import { ProjectItem } from "./project-item.js";
+import { DropTarget } from "../models/drag-drop";
+import { Project, ProjectStatus } from "../models/project";
+import Component from "../components/components";
+import { bind } from "../decorators/decorator";
+import { projectState } from "../state/project-state";
+import { ProjectItem } from "./project-item";
 
 // ProjectList class
 export class ProjectList
