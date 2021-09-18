@@ -15,6 +15,7 @@
   "author": "Maximilian Schwarzmüller",
   "license": "ISC",
   "devDependencies": {
+    "@types/googlemaps": "^3.43.3",
     "@types/lodash": "^4.14.172",
     "clean-webpack-plugin": "^4.0.0",
     "lite-server": "^2.5.4",
@@ -25,6 +26,7 @@
     "webpack-dev-server": "^3.10.3"
   },
   "dependencies": {
+    "axios": "^0.21.4",
     "class-transformer": "^0.4.0",
     "class-validator": "^0.13.1",
     "lodash": "^4.17.21",

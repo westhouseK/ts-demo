@@ -1,26 +1,41 @@
-import "reflect-metadata";
-import { plainToClass } from "class-transformer";
-import { validate } from "class-validator";
+import axios from "axios";
 
-import { Product } from "./product.model";
+const form = document.querySelector("form")!;
+const addressInput = document.getElementById("address")! as HTMLInputElement;
 
-const products = [
-  { title: "bbb", price: 200 },
-  { title: "ccc", price: 300 },
-];
+const API = "XXX";
 
-const l = plainToClass(Product, products);
+type geoRes = {
+  results: { geometry: { location: { lat: number; lng: number } } }[];
+  status: "OK" | "ZERO_RESULTS";
+};
 
-const a = new Product("", -1000);
-validate(a).then((errors) => {
-  if (errors.length > 0) {
-    console.log("error");
-    console.log(errors);
-  } else {
-    console.log(a.getInfomation());
-  }
-});
+// declare var google: any;
 
-for (const prod of l) {
-  console.log(prod.getInfomation());
+function searchAddressHandler(event: Event) {
+  event.preventDefault();
+  const enterAddress = addressInput.value;
+
+  const url: string = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURI(
+    enterAddress
+  )}&key=${API}`;
+  axios
+    .get<geoRes>(url)
+    .then((res) => {
+      if (res.data.status !== "OK") {
+        throw new Error("取得失敗");
+      }
+      const coordinate = res.data.results[0].geometry.location;
+      const map = new google.maps.Map(document.getElementById("map")!, {
+        center: coordinate,
+        zoom: 16,
+      });
+      new google.maps.Marker({ position: coordinate, map: map });
+    })
+    .catch((error) => {
+      alert(error.message);
+      console.log(error);
+    });
 }
+
+form.addEventListener("submit", searchAddressHandler);
