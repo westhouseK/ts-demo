@@ -3,14 +3,19 @@
 // 値段 100〜10000円
 // ステータス 一度完了にしたら、変更することができない
 
-type Status = 'waiting' | 'complated'
+const Status = {
+    WAITING: 'waiting',
+    COMPLATED: 'complated'
+} as const;
+type StatusType = typeof Status[keyof typeof Status]
+
 
 // ドメイン層
 class Item {
     private _id: number
     private _name: string
     private _price: number
-    private _status: Status
+    private _status: StatusType
     constructor(name: string, price: number) {
         this._id = Math.random()
         if (name.length >= 10) {
@@ -21,7 +26,7 @@ class Item {
         }
         this._name = name
         this._price = price
-        this._status = 'waiting'
+        this._status = Status.COMPLATED
     }
     public name() {
         return this._name
@@ -30,12 +35,12 @@ class Item {
         return this._status
     }
     complate() {
-        this._status = 'complated'
+        this._status = Status.WAITING
     }
 }
 class ItemDomainService {
     notChangeStatus(item: Item) {
-        if (item.status() === 'complated') {
+        if (item.status() === Status.COMPLATED) {
             throw new Error('一度完了にしたら、変更することができません')
         }
     }
