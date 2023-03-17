@@ -1,10 +1,12 @@
 {
   "compilerOptions": {
+    "experimentalDecorators": true,
     "target": "es2020",
     "module": "commonjs",
     "jsx": "preserve",
     "outDir": "./build/js/",
     "strict": true,
-    "sourceMap": true
+    "sourceMap": true,
+    "suppressImplicitAnyIndexErrors": true
   }
 }
