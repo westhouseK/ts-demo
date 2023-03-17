@@ -28,10 +28,13 @@ class Item {
         this._price = price
         this._status = Status.WAITING
     }
-    public name() {
+    get id() {
+        return this._id
+    }
+    get name() {
         return this._name
     }
-    public status() {
+    get status() {
         return this._status
     }
     complate() {
@@ -40,7 +43,7 @@ class Item {
 }
 class ItemDomainService {
     notChangeStatus(item: Item) {
-        if (item.status() === Status.COMPLATED) {
+        if (item.status === Status.COMPLATED) {
             throw new Error('一度完了にしたら、変更することができません')
         }
     }
@@ -96,10 +99,10 @@ class UpdateItemResolver {
 // インフラ層
 class ItemRepository implements IItemRepository {
     create(item: Item) {
-        console.log(`データベースに${item.name()}を登録`)
+        console.log(`データベースに${item.name}を登録`)
     }
     update(item: Item) {
-        console.log(`データベースに${item.name()}を更新`)
+        console.log(`データベースの${item.id}を更新`)
     }
 }
 
