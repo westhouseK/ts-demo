@@ -26,7 +26,7 @@ class Item {
         }
         this._name = name
         this._price = price
-        this._status = Status.COMPLATED
+        this._status = Status.WAITING
     }
     public name() {
         return this._name
@@ -35,7 +35,7 @@ class Item {
         return this._status
     }
     complate() {
-        this._status = Status.WAITING
+        this._status = Status.COMPLATED
     }
 }
 class ItemDomainService {
